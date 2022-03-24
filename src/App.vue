@@ -8,4 +8,9 @@
 </script>
 
 <style lang="less">
+  *{
+    padding: 0;
+    margin: 0;
+    font-family: "Noto Sans CJK JP", "Hiragino Kaku Gothic ProN", Arial, "メイリオ", "Meiryo", sans-serif;
+  }
 </style>

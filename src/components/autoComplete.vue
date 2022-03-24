@@ -1,30 +1,34 @@
 <template>
-  <div class="auto-complete">
+  <div class="auto-complete" @click="handleInputFocus">
     <!-- 匹配的条目 -->
     <div class="entries">
       <div class="entry" v-for="(item, index) in selectedEntryList" :key="index">
         <span class="value">{{item}}</span>
-        <img src="../assets/images/icon_close.png" @click="removeEntry(index)" alt="点击删除"/>
+        <div class="icon-close-box" @click.stop="handleRemoveEntry(index)">
+          <img class="icon-close" src="../assets/images/icon_close.png"  alt="点击删除"/>
+        </div>
       </div>
     </div>
     <!-- 输入框 -->
     <div class="input-box">
-      <input class="input" v-model="inputValue" @input="checkEntries" type="text"/>
+      <input class="input" v-model="inputValue" ref="input" @input="checkEntries" type="text"/>
       <div class="suggestion-box" v-show="suggestionList.length > 0">
         <div 
           class="suggestion" 
           v-for="(item, index) in suggestionList" 
           :key="index"
-          @click="selectSuggestion(item)"
+          @click="handleSelectSuggestion(item)"
         >{{item}}</div>
       </div>
     </div>
-    <button @click="handleSearch">搜索</button>
   </div>
 </template>
 
 <script lang="ts">
   import Vue from 'vue'
+  import { PropType } from "vue"
+  let timer: ReturnType<typeof setTimeout>
+
   export default Vue.extend({
     // 类型推断已启用
     data() {
@@ -37,32 +41,39 @@
     props: {
       entryList: {
         default: () => [],
-        type: Array
+        type: Array as PropType<string[]>
       }
     },
     methods: {
       // 校验匹配词条 生成建议词条
       checkEntries() {
-        if (this.inputValue === '') {
-          this.suggestionList = []
-        } else {
-          this.suggestionList = this.entryList.filter((item: any) => {
-            return item.indexOf(this.inputValue) >= 0
-          }) as string[]
-        }
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+          if (this.inputValue === '') {
+            this.suggestionList = []
+          } else {
+            this.suggestionList = this.entryList.filter((item: string) => {
+              return item.indexOf(this.inputValue) >= 0
+            }) as string[]
+          }
+        }, 100)
       },
       // 选择建议词条
-      selectSuggestion(suggestion: string) {
+      handleSelectSuggestion(suggestion: string) {
         this.selectedEntryList.push(suggestion)
         this.inputValue = ''
+        this.suggestionList = []
+        this.$emit('selectedEntryListChange', this.selectedEntryList)
       },
       // 移除已选择词条
-      removeEntry(index: number) {
+      handleRemoveEntry(index: number) {
         this.selectedEntryList.splice(index, 1)
+        this.$emit('selectedEntryListChange', this.selectedEntryList)
+        this.handleInputFocus()
       },
-      handleSearch() {
-        if (this.selectedEntryList.length === 0) return
-        this.$emit('search', this.selectedEntryList)
+      // 点击组件自动聚焦
+      handleInputFocus() {
+        (this.$refs.input as HTMLElement).focus()
       }
     },
     mounted() {
@@ -71,9 +82,69 @@
 </script>
 
 <style lang="less">
-  .suggestion{
-    &:hover{
-      background-color: #eaeaea;
+  .auto-complete{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    &::-webkit-scrollbar{
+      display: none;
+    }
+    .entries{
+      height: 100%;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex-wrap: nowrap;
+      .entry{
+        height: 28px;
+        padding-left: 10px;
+        border-radius: 2px;
+        color: #666;
+        font-size: 14px;
+        background-color: #eee;
+        flex-grow: 0;
+        flex-shrink: 0;
+        margin-right: 10px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        .icon-close-box{
+          width: 32px;
+          height: 32px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          .icon-close{
+            width: 10px;
+            height: 10px;
+          }
+        }
+      }
+    }
+    .input-box{
+      height: 100%;
+      position: relative;
+      .input{
+        height: 100%;
+        border: none;
+        outline: none;
+      }
+      .suggestion-box{
+        width: 200px;
+        position: absolute;
+        max-height: 200px;
+        overflow-y: scroll;
+        left: 0;
+        top: 80px;
+        .suggestion{
+          &:hover{
+            background-color: #eaeaea;
+          }
+        }
+      }
     }
   }
 </style>
