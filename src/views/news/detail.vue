@@ -14,6 +14,9 @@
     methods: {
     },
     mounted() {
+      if (!window.localStorage.getItem('token')) {
+        this.$router.push('/login')
+      }
     }
   })
 </script>
