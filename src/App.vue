@@ -13,4 +13,7 @@
     margin: 0;
     font-family: "Noto Sans CJK JP", "Hiragino Kaku Gothic ProN", Arial, "メイリオ", "Meiryo", sans-serif;
   }
+  .box{
+    width: 100%;
+  }
 </style>

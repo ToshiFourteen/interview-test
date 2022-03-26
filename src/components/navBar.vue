@@ -4,7 +4,7 @@
       <img class="logo" src="../assets/images/logo.png" alt="">
       <div class="description">塾専用コミュニケーション &業務管理システム</div>
     </div>
-    <div class="menu-box">
+    <div class="menu-box" v-if="menuStatus">
       <!-- menu 0 -->
       <div class="menu-item has-sub" @mouseenter="handleMenuEnter(0)" @mouseleave="handleMenuLeave">
         <div class="menu-name">
@@ -161,6 +161,11 @@
       </div>
       <div class="teachers-login">塾講師ログイン</div>
     </div>
+    <div :class="['menu-switch-box', menuStatus ? 'active' : '']" @click="handleMenuSwitch">
+      <div class="line line-1"></div>
+      <div class="line line-2"></div>
+      <div class="line line-3"></div>
+    </div>
   </header>
 </template>
 
@@ -171,7 +176,8 @@
       return {
         menuActiveIndex: -1,
         subActiveIndex: -1,
-        needFix: false
+        needFix: false,
+        menuStatus: false
       }
     },
     methods: {
@@ -188,14 +194,29 @@
       },
       handleSubLeave() {
         this.subActiveIndex = -1
+      },
+      handleMenuSwitch() {
+        this.menuStatus = !this.menuStatus
+      },
+      checkClientWidth() {
+        if (document.body.clientWidth >= 800 && !this.menuStatus) {
+          this.menuStatus = true
+        }
       }
+    },
+    created() {
+      this.checkClientWidth()
+      window.addEventListener('resize', this.checkClientWidth)
+    },
+    beforeDestroy() {
+      window.removeEventListener('resize', this.checkClientWidth)
     }
   })
 </script>
 
-<style lang="less" >
+<style lang="less">
   .header{
-    width: 100vw;
+    width: 100%;
     height: 80px;
     display: flex;
     justify-content: space-between;
@@ -242,6 +263,7 @@
         cursor: pointer;
         padding: 5px 8px;
         border-radius: 4px;
+        box-sizing: border-box;
         &:hover{
           background-color: #eee;
         }
@@ -299,6 +321,8 @@
             vertical-align: middle;
             margin-top: -2px;
             margin-left: 2px;
+            transition: all 0.3s;
+            transform-origin: left center;
           }
         }
       }
@@ -339,7 +363,38 @@
     }
   }
 
-  @media screen and (max-width: 1425px) and (min-width: 1312px) {
+  .menu-switch-box{
+    width: 24px;
+    height: 20px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    display: none;
+    .line{
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background-color: #493b32;
+      transition: all 0.3s;
+    }
+    .line-1, .line-3{
+      transform-origin: left center;
+    }
+  }
+  .active{
+    .line-1{
+      transform: rotate(45deg);
+    }
+    .line-2{
+      opacity: 0;
+    }
+    .line-3{
+      transform: rotate(-45deg);
+    }
+  }
+
+
+  @media screen and (max-width: 1425px) and (min-width: 800px) {
     .menu-box{
       .menu-item{
         .menu-name{
@@ -353,5 +408,115 @@
     .no-sub{
       display: none;
     }  
+  }
+  @media screen and (max-width: 900px) {
+    .header{
+      .logo-box{
+        .description{
+          display: none;
+        }
+      }
+    }
+  }
+  @media screen and (max-width: 800px) {
+    .header{
+      height: 44px;
+      padding: 0 16px;
+      .logo-box{
+        .logo {
+          width: 86px;
+          height: 20px;
+        }
+      }
+    }
+    .menu-box{
+      width: 100%;
+      height: 100vh;
+      position: absolute;
+      left: 0;
+      top: 44px;
+      background-color: #fff;
+      display: block;
+      .menu-item{
+        .menu-name{
+          width: 100%;
+          height: 60px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          transition: width 0.3s;
+          border-bottom: 0.5px solid #d0d0d5;
+          .icon-arrow{
+            transform: rotate(90deg);
+          }
+        }
+        .sub-menu-box{
+          width: 50%;
+          top: 0;
+          left: 50%;
+          .sub-menu{
+            margin-top: 0;
+            border-radius: 0;
+            padding: 0;
+            .sub-menu-item{
+              width: 100%;
+              height: 60px;
+              .sub-menu-name{
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: width 0.3s;
+                border-bottom: 0.5px solid #d0d0d5;
+                padding: 0 20px;
+                box-sizing: border-box;
+              }
+              &:hover{
+                .icon-triangle{
+                  border-color:transparent transparent transparent #ffffff;
+                  transform: rotate(90deg);
+                }
+              }
+              .tri-menu-box{
+                width: 100%;
+                position: relative;
+                left: 0;
+                top: 0;
+                background-color: #fff;
+                z-index: 1000;
+                .tri-menu{
+                  margin-left: 0;
+                  padding: 0;
+                  border-radius: 0;
+                  .tri-menu-item{
+                    width: 100%;
+                    height: 45px;
+                    text-align: left;
+                    padding-left: 20px;
+                    box-sizing: border-box;
+                    font-size: 14px;
+                    border-bottom: 0.5px solid #d0d0d5;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .teachers-login{
+        width: 100%;
+        height: 60px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        border-bottom: 0.5px solid #d0d0d5;
+        border-radius: 0;
+        background-color: #fff;
+      }
+    }
+    .menu-switch-box{
+      display: flex;
+    }
   }
 </style>
