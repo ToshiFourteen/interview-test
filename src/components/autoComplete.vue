@@ -11,7 +11,7 @@
     </div>
     <!-- 输入框 -->
     <div class="input-box">
-      <input class="input" v-model="inputValue" ref="input" @input="checkEntries" type="text"/>
+      <input class="input" v-model="inputValue" ref="input" @input="checkEntries" type="text" placeholder="请输入搜索项"/>
       <div class="suggestion-box" v-show="suggestionList.length > 0">
         <div 
           class="suggestion" 
@@ -52,9 +52,21 @@
           if (this.inputValue === '') {
             this.suggestionList = []
           } else {
-            this.suggestionList = this.entryList.filter((item: string) => {
-              return item.indexOf(this.inputValue) >= 0
-            }) as string[]
+            let length = 0
+            let suggestionList = []
+            // 只筛选最近的5个
+            for (let item of this.entryList) {
+              if (item.indexOf(this.inputValue) >= 0) {
+                suggestionList.push(item)
+                length++
+                if (length === 5) break
+              }
+            }
+            // let suggestionList = this.entryList.filter((item: string) => {
+            //   return item.indexOf(this.inputValue) >= 0
+            // }) as string[]
+            // if (suggestionList.length > 5) suggestionList.length = 5
+            this.suggestionList = suggestionList
           }
         }, 100)
       },
@@ -81,7 +93,7 @@
   })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .auto-complete{
     width: 100%;
     height: 50px;
@@ -135,11 +147,14 @@
       .suggestion-box{
         width: 200px;
         position: absolute;
-        max-height: 200px;
-        overflow-y: scroll;
         left: 0;
-        top: 80px;
+        top: 40px;
+        background-color: #fff;
+        z-index: 1000;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
         .suggestion{
+          padding: 10px 20px;
+          cursor: pointer;
           &:hover{
             background-color: #eaeaea;
           }

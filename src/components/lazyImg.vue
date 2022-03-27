@@ -6,7 +6,7 @@
   import Vue from 'vue'
   import baseImg from '../assets/images/img_default.png'
 
-  let timer: any = null
+  let timer: ReturnType<typeof setTimeout>
   // new监听
   let observer = new IntersectionObserver((entries)=>{
     entries.forEach((entry: any) =>{
@@ -54,7 +54,7 @@
   })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .lazy-img{
     width: 100%;
     height: 100%;

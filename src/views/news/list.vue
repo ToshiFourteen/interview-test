@@ -1,15 +1,16 @@
 <template>
   <div class="box">
+    <notice ref="notice"></notice>
     <div class="search-box">
       <auto-complete :entryList="entryList" @selectedEntryListChange="handleSelectedEntryListChange"></auto-complete>
       <img class="icon-search" src="../../assets/images/icon_search.png" @click="handleSearch" alt="搜索">
     </div>
     <div class="container">
       <div class="news-list">
-        <div class="news" v-for="(item, index) in newsList" :key="item.id" @click="navigate('/news/detail')">
+        <div class="news" v-for="(item) in newsList[page - 1]" :key="item.id" @click="handleNavigate(`/news/detail?id=${item.id}`)">
           <div class="left">
             <div class="title">{{item.title}}</div>
-            <div class="content">{{item.content}}</div>
+            <div class="content">{{item.description}}</div>
             <div class="date">{{item.date}}</div>
           </div>
           <div class="right">
@@ -19,11 +20,16 @@
       </div>
       <div class="topic-list">
         <div class="title">热门</div>
-        <div class="topic">按键大家阿就是大家</div>
-        <div class="topic">按键大家阿就是大家</div>
-        <div class="topic">按键大家阿就是大家</div>
+        <div class="topic">假的热门a</div>
+        <div class="topic">假的热门b</div>
+        <div class="topic">假的热门c</div>
       </div>
     </div>
+    <div class="pagination-box">
+      <div class="pagination" v-if="newsList.length > 1 && page > 1" @click="handlePrevPage">上一页</div>
+      <div class="pagination" v-if="newsList.length > 1 && page < newsList.length" @click="handleNextPage">下一页</div>
+    </div>
+    <back-top></back-top>
   </div>
 </template>
 
@@ -31,47 +37,84 @@
   import Vue from 'vue'
   import autoComplete from '../../components/autoComplete.vue'
   import lazyImg from '../../components/lazyImg.vue'
+  import notice from '../../components/notice.vue'
+  import backTop from '../../components/backTop.vue'
+  import { newList as newListOri, entryList } from '../../utils/mockData'
+  
+  interface News {
+    id: number,
+    title: string,
+    content: string,
+    date: string,
+    cover: string,
+    description: string
+  }
+
   export default Vue.extend({
     components: {
       autoComplete,
-      lazyImg
+      lazyImg,
+      notice,
+      backTop
     },
     data() {
       return {
-        entryList: [
-          'abc',
-          'abcd',
-          'bcd',
-          'xxxx',
-          'hhhh'
-        ],
-        newsList: [
-          {id: 1, title: '嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨嗨', content: '内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx内容xxx', date: '三天前', cover: 'https://img0.baidu.com/it/u=2064213898,2801034448&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500'},
-          {id: 2, title: '嗨2', content: '内容xxx123', date: '三天前', cover: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fphoto%2F2008-10-31%2F200810280903016543.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650388589&t=a4792a7a30e1cd9610a8d7b39450b245'},
-          {id: 3, title: '嗨3', content: '内容xxx131', date: '三天前', cover: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.jj20.com%2Fup%2Fallimg%2F1111%2F0Q91Q50307%2F1PQ9150307-8.jpg&refer=http%3A%2F%2Fpic.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650388589&t=e7e7f1a5854ce01d508faf221c9f56de'},
-          {id: 4, title: '嗨4', content: '内容xxx12313123', date: '三天前', cover: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.jj20.com%2Fup%2Fallimg%2F911%2F111G5133543%2F15111G33543-1.jpg&refer=http%3A%2F%2Fpic.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650388589&t=7c07366da4a204c60ff7e78c6edea0cf'},
-          {id: 5, title: '嗨5', content: '内容xxx13131', date: '三天前', cover: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.jj20.com%2Fup%2Fallimg%2F911%2F0R415123342%2F150R4123342-6-1200.jpg&refer=http%3A%2F%2Fimg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650388589&t=0f10b9a6e17956f79e893895b0ed4e70'},
-          {id: 6, title: '嗨6', content: '内容xxx1313', date: '三天前', cover: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2F2020-08-20%2F5f3e45af82a4d.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650388589&t=bfe3da0325b07f909c04de18a2c7c8f0'},
-          {id: 7, title: '嗨7', content: '内容xxx1313', date: '三天前', cover: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.jj20.com%2Fup%2Fallimg%2F911%2F050916125K7%2F160509125K7-11.jpg&refer=http%3A%2F%2Fpic.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650388589&t=417c6a4518ad619c6594d8b12a947c00'},
-          {id: 8, title: '嗨8', content: '内容xxx1313', date: '三天前', cover: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fphoto%2F2010-3-12%2Fenterdesk.com-36242C8529388B803FF0349DEEB18C9D.JPG&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650388589&t=8b2c1b40c0ca147bf3a929bad30bcc84'},
-          {id: 9, title: '嗨9', content: '内容xx13131x', date: '三天前', cover: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fphoto%2F2008-6-13%2F200806131108306030.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650388589&t=7bf1e7afa8d621308e303dacfc45140d'},
-          {id: 10, title: '嗨10', content: '内容xx1313131x', date: '三天前', cover: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.jj20.com%2Fup%2Fallimg%2F911%2F0QQ6113951%2F160QQ13951-1.jpg&refer=http%3A%2F%2Fpic.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1650388589&t=f61fde59f6713cf350280503c61553d1'},
-        ],
-        selectedEntryList: [] as string[]
+        entryList: entryList,
+        newsList: [[]] as News[][],
+        selectedEntryList: [] as string[],
+        page: 1
       }
     },
     methods: {
-      navigate(url: string) {
+      handleNavigate(url: string) {
         this.$router.push(url)
       },
       handleSelectedEntryListChange(list: string[]) {
         this.selectedEntryList = list
       },
       handleSearch() {
-        console.log(this.selectedEntryList)
+        if (this.selectedEntryList.length === 0) {
+          (this.$refs.notice as any).notify('danger', '您还未选择任何搜索匹配项')
+          return
+        }
+        // 通过文章title筛选
+        let result = [] as Array<News>
+        newListOri.forEach((item: News) => {
+          this.selectedEntryList.forEach((entry: string) => {
+            if (item.title.indexOf(entry) >= 0) {
+              result.push(item)
+            }
+          })
+        })
+        this.page = 1
+        this.newsList = this.paginationConvert(result)
+      },
+      handlePrevPage() {
+        if (this.page > 1) {
+          this.page--
+        }
+      },
+      handleNextPage() {
+        if (this.page < this.newsList.length) {
+          this.page++
+        }
+      },
+      paginationConvert(list: any[]) {
+        let times = Math.floor(list.length / 10)
+        if (times === 0) return [list]
+        let _list = []
+        for (let i = 0; i <= times; i++) {
+          if (i === times) {
+            _list.push(list.slice(i * 10, i * 10 + list.length % 10))
+          } else {
+            _list.push(list.slice(i * 10, i * 10 + 10))
+          }
+        }
+        return _list
       }
     },
     mounted() {
+      this.newsList = this.paginationConvert(newListOri)
     }
   })
 </script>
@@ -101,7 +144,7 @@
   .container{
     width: 100%;
     padding-top: 40px;
-    padding-bottom: 100px;
+    padding-bottom: 40px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -118,31 +161,35 @@
         align-items: center;
         margin: auto auto 20px auto;
         box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
+        border-radius: 6px;
+        cursor: pointer;
         .left{
           width: calc(100% - 160px);
           height: 100%;
           position: relative;
           .title{
             width: 100%;
-            color: rgb(26, 13, 171);
+            color: #493b32;
             font-size: 18px;
             margin-top: 20px;
             overflow: hidden;
-            text-overflow:ellipsis;
+            text-overflow: ellipsis;
             white-space: nowrap;
-            cursor: pointer;
+            font-weight: 700;
             &:hover{
               text-decoration: underline;
             }
           }
           .content{
-            color: #666;
+            color: #16bfb7;
+            font-weight: 14px;
             font-size: 16px;
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 3;
             overflow: hidden;
+            line-height: 1.2;
+            margin-top: 6px;
           }
           .date{
             color: #999;
@@ -163,18 +210,43 @@
     .topic-list{
       width: 30%;
       .title{
-        color: red;
+        color: #f5222d;
         font-size: 20px;
         font-weight: 700;
       }
       .topic{
-        // width: 100%;
-        padding: 20px;
-        background-color: #eaeaea;
-        color: red;
+        width: 60%;
+        text-align: center;
+        padding: 10px 20px;
+        border-radius: 4px;
+        background-color: #fddc3e;
+        color: #493b32;
         margin-top: 20px;
         box-sizing: border-box;
+        font-weight: 700;
+        cursor: pointer;
+        &:hover{
+          color: #fff;
+        }
       }
+    }
+  }
+  .pagination-box{
+    width: 80%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0 auto;
+    padding-bottom: 100px;
+    .pagination{
+      font-size: 18px;
+      color: #fff;
+      margin: 0 20px;
+      cursor: pointer;
+      padding: 10px 20px;
+      box-sizing: border-box;
+      background-color: #16bfb7;
+      border-radius: 4px;
     }
   }
   @media screen and (max-width: 1166px){
@@ -186,5 +258,10 @@
         display: none;
       }
     }
+    .pagination-box{
+      justify-content: center;
+    }
   }
+
+
 </style>

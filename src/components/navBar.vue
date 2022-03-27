@@ -214,7 +214,7 @@
   })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .header{
     width: 100%;
     height: 80px;
@@ -360,6 +360,7 @@
       line-height: 32px;
       font-weight: 700;
       color: #493b32;
+      cursor: pointer;
     }
   }
 

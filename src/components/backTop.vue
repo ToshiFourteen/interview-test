@@ -37,15 +37,23 @@
   })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .back-top{
+    width: 60px;
+    height: 60px;
+    background-color: #fff;
+    border-radius: 6px;
     position: fixed;
     right: 50px;
     bottom: 100px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     .icon-back-top{
-      width: 59px;
-      height: 59px;
+      width: 34px;
+      height: 34px;
     }
   }
 </style>
