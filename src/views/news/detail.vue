@@ -28,7 +28,7 @@
             <div class="date">{{item.date}}</div>
           </div>
           <div class="right">
-            <lazy-img :url="item.cover"></lazy-img>
+            <div class="img" :style="`background-image: url(${item.cover})`"></div>
           </div>
         </div>
       </div>
@@ -176,6 +176,13 @@
           flex-grow: 0;
           width: 120px;
           height: 120px;
+          .img{
+            width: 100%;
+            height: 100%;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center center;
+          }
         }
       }
     }

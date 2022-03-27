@@ -4,16 +4,24 @@
       <auto-complete :entryList="entryList" @selectedEntryListChange="handleSelectedEntryListChange"></auto-complete>
       <img class="icon-search" src="../../assets/images/icon_search.png" @click="handleSearch" alt="搜索">
     </div>
-    <div class="news-list">
-      <div class="news" v-for="(item, index) in newsList" :key="item.id" @click="navigate('/news/detail')">
-        <div class="left">
-          <div class="title">{{item.title}}</div>
-          <div class="content">{{item.content}}</div>
-          <div class="date">{{item.date}}</div>
+    <div class="container">
+      <div class="news-list">
+        <div class="news" v-for="(item, index) in newsList" :key="item.id" @click="navigate('/news/detail')">
+          <div class="left">
+            <div class="title">{{item.title}}</div>
+            <div class="content">{{item.content}}</div>
+            <div class="date">{{item.date}}</div>
+          </div>
+          <div class="right">
+            <lazy-img :url="item.cover"></lazy-img>
+          </div>
         </div>
-        <div class="right">
-          <lazy-img :url="item.cover"></lazy-img>
-        </div>
+      </div>
+      <div class="topic-list">
+        <div class="title">热门</div>
+        <div class="topic">按键大家阿就是大家</div>
+        <div class="topic">按键大家阿就是大家</div>
+        <div class="topic">按键大家阿就是大家</div>
       </div>
     </div>
   </div>
@@ -71,14 +79,12 @@
 <style lang="less" scoped>
   .box{
     width: 100%;
-    max-width: 600px;
     height: 100vh;
   }
   .search-box{
-    width: 100%;
+    width: 80%;
     display: flex;
-    margin-left: 20px;
-    margin-top: 20px;
+    margin: 20px auto auto auto;
     justify-content: flex-start;
     align-items: center;
     border: 1px #eaeaea solid;
@@ -92,58 +98,92 @@
     }
   }
 
-  .news-list{
+  .container{
     width: 100%;
-    .news{
-      width: 100%;
-      height: 160px;
-      padding: 0 20px;
-      box-sizing: border-box;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
-      margin-left: 20px;
-      box-shadow: 2px 2px 10px 0 rgba(0,0,0,0.08);
-      border-radius: 10px;
-      .left{
-        width: calc(100% - 160px);
-        height: 100%;
-        position: relative;
-        .title{
-          width: 100%;
-          color: rgb(26, 13, 171);
-          font-size: 18px;
-          margin-top: 20px;
-          overflow: hidden;
-          text-overflow:ellipsis;
-          white-space: nowrap;
-          cursor: pointer;
-          &:hover{
-            text-decoration: underline;
+    padding-top: 40px;
+    padding-bottom: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    overflow: hidden;
+    .news-list{
+      width: 70%;
+      .news{
+        width: 70%;
+        height: 160px;
+        padding: 0 20px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: auto auto 20px auto;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        .left{
+          width: calc(100% - 160px);
+          height: 100%;
+          position: relative;
+          .title{
+            width: 100%;
+            color: rgb(26, 13, 171);
+            font-size: 18px;
+            margin-top: 20px;
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+            &:hover{
+              text-decoration: underline;
+            }
+          }
+          .content{
+            color: #666;
+            font-size: 16px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+          }
+          .date{
+            color: #999;
+            font-size: 14px;
+            position: absolute;
+            left: 0px;
+            bottom: 20px;
           }
         }
-        .content{
-          color: #666;
-          font-size: 16px;
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 3;
-          overflow: hidden;
-        }
-        .date{
-          color: #999;
-          font-size: 14px;
-          position: absolute;
-          left: 0px;
-          bottom: 20px;
+        .right{
+          flex-shrink: 0;
+          flex-grow: 0;
+          width: 120px;
+          height: 120px;
         }
       }
-      .right{
-        flex-shrink: 0;
-        flex-grow: 0;
-        width: 120px;
-        height: 120px;
+    }
+    .topic-list{
+      width: 30%;
+      .title{
+        color: red;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .topic{
+        // width: 100%;
+        padding: 20px;
+        background-color: #eaeaea;
+        color: red;
+        margin-top: 20px;
+        box-sizing: border-box;
+      }
+    }
+  }
+  @media screen and (max-width: 1166px){
+    .container{
+      .news-list{
+        width: 100%;
+      }
+      .topic-list{
+        display: none;
       }
     }
   }
