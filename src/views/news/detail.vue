@@ -125,9 +125,9 @@
             align-items: center;
             margin-top: 10px;
             font-weight: 100;
-            .date{
-              margin-left: 20px;
-            }
+            // .date{
+            //   margin-left: 20px;
+            // }
           }
           .main{
             padding-top: 20px;
