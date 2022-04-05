@@ -284,6 +284,7 @@
         left: 0;
         top: 0px;
         transition: 0.3s all;
+        z-index: 100;
       }
       .sub-menu-box-fix{
         left: -140px;
@@ -379,18 +380,18 @@
       transition: all 0.3s;
     }
     .line-1, .line-3{
-      transform-origin: left center;
+      transform-origin: center center;
     }
   }
   .active{
     .line-1{
-      transform: rotate(45deg);
+      transform: translateY(8px) rotate(45deg) ;
     }
     .line-2{
       opacity: 0;
     }
     .line-3{
-      transform: rotate(-45deg);
+      transform: translateY(-8px) rotate(-45deg) ;
     }
   }
 

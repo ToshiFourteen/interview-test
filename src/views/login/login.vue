@@ -31,7 +31,7 @@
         </div>
         <div class="input-box">
           <label for="password">パスワード</label>
-          <input type="password" id="password" v-model="password" >
+          <input type="password" id="password" ref="password" v-model="password" >
         </div>
         <div class="show-password">
           <input type="checkbox" v-model="showPassword" id="showPassword">

@@ -1,5 +1,5 @@
 <template>
-  <div class="lazy-img" ref="img"></div>
+  <img class="lazy-img" ref="img"/>
 </template>
 
 <script lang="ts">
@@ -9,23 +9,27 @@
   let timer: ReturnType<typeof setTimeout>
   // new监听
   let observer = new IntersectionObserver((entries)=>{
+    console.log(entries)
     entries.forEach((entry: any) =>{
-        if(entry.isIntersecting || entry.intersectionRatio>0){
+      if( entry.isIntersecting || entry.intersectionRatio > 0){
         !entry.target.isLoaded && showImage(entry.target, entry.target.data_src)
-        }
+      }
     })
   })
   // 处理图片显示
   function showImage(el: any, imgSrc: string){
-    const img = new Image()
-    img.src = imgSrc
-    img.onload = ()=>{
-      el.style = `background-image: url(${imgSrc})`
+    el.onload = ()=>{
       el.isLoaded = true
     }
+    el.src = imgSrc
   }
 
   export default Vue.extend({
+    data() {
+      return {
+        target: null as any
+      }
+    },
     props: {
       url: {
         default: '',
@@ -36,9 +40,11 @@
       // 将img标签与监听绑定
       bind() {
         let el : any = this.$refs['img']
-        el.style = `background-image: url(${baseImg})`
+        el.src = baseImg
         el.data_src = this.url
+        // console.log(el)
         observer.observe(el)
+        this.target = el
       }
     },
     mounted() {
@@ -46,10 +52,7 @@
     },
     // destroy前取消监听
     beforeDestroy() {
-      clearTimeout(timer)
-      timer = setTimeout(() => {
-        observer.disconnect()
-      }, 20)
+      observer.unobserve(this.target)
     }
   })
 </script>
@@ -58,8 +61,7 @@
   .lazy-img{
     width: 100%;
     height: 100%;
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
+    object-fit: cover;
+    object-position: center center;
   }
 </style>
